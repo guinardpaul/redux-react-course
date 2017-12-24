@@ -1,7 +1,8 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import CounterControl from "../../components/CounterControl/CounterControl";
-import CounterOutput from "../../components/CounterOutput/CounterOutput";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import CounterControl from '../../components/CounterControl/CounterControl';
+import CounterOutput from '../../components/CounterOutput/CounterOutput';
+import * as actionTypes from '../../store/actions';
 
 class Counter extends Component {
   state = {
@@ -10,22 +11,22 @@ class Counter extends Component {
 
   counterChangedHandler = (action, value) => {
     switch (action) {
-      case "inc":
+      case 'inc':
         this.setState(prevState => {
           return { counter: prevState.counter + 1 };
         });
         break;
-      case "dec":
+      case 'dec':
         this.setState(prevState => {
           return { counter: prevState.counter - 1 };
         });
         break;
-      case "add":
+      case 'add':
         this.setState(prevState => {
           return { counter: prevState.counter + value };
         });
         break;
-      case "sub":
+      case 'sub':
         this.setState(prevState => {
           return { counter: prevState.counter - value };
         });
@@ -51,14 +52,15 @@ class Counter extends Component {
           clicked={this.props.onSubstactCounter}
         />
         <hr />
-        <button onClick={this.props.onStoreResult}>Store Results</button>
+        <button onClick={() => this.props.onStoreResult(this.props.ctr)}>
+          Store Results
+        </button>
         <ul>
           {this.props.storedResults.map(str => {
             return (
               <li
                 key={str.id}
-                onClick={() => this.props.onDeleteResult(str.id)}
-              >
+                onClick={() => this.props.onDeleteResult(str.id)}>
                 {str.value}
               </li>
             );
@@ -73,20 +75,25 @@ class Counter extends Component {
 const mapStateToProps = state => {
   return {
     // nom_props : nom_state
-    ctr: state.counter,
-    storedResults: state.results
+    ctr: state.ctr.counter,
+    storedResults: state.res.results
   };
 };
 
 // Lie les actions au component
 const mapDispatchToProps = dispatch => {
   return {
-    onIncrementCounter: () => dispatch({ type: "INCREMENT" }),
-    onDecrementCounter: () => dispatch({ type: "DECREMENT" }),
-    onAddCounter: () => dispatch({ type: "ADD" }),
-    onSubstactCounter: () => dispatch({ type: "SUBSTRACT" }),
-    onStoreResult: () => dispatch({ type: "STORE_RESULT" }),
-    onDeleteResult: id => dispatch({ type: "DELETE_RESULT", resultId: id })
+    onIncrementCounter: () => dispatch({ type: actionTypes.INCREMENT }),
+    onDecrementCounter: () => dispatch({ type: actionTypes.DECREMENT }),
+    onAddCounter: () => dispatch({ type: actionTypes.ADD }),
+    onSubstactCounter: () => dispatch({ type: actionTypes.SUBSTRACT }),
+    onStoreResult: result =>
+      dispatch({
+        type: actionTypes.STORE_RESULT,
+        payload: { id: new Date(), value: result }
+      }),
+    onDeleteResult: id =>
+      dispatch({ type: actionTypes.DELETE_RESULT, resultId: id })
   };
 };
 
